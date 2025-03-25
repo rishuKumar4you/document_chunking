@@ -165,6 +165,7 @@ if __name__ == "__main__":
     parser.add_argument("--image", type=str, required=True, help="Path to the image")
     parser.add_argument("--kernel", type=int, default=15, help="Kernel size for morphological operations")
     parser.add_argument("--limit_cluster", type=bool, default=False, help="Limit the number of clusters to 4")
+    parser.add_argument("--iteration",type=int,default=2,help="Number of iterations for morphological operations")
     
     args=parser.parse_args()
 
@@ -190,7 +191,7 @@ if __name__ == "__main__":
     thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (args.kernel,args.kernel))
-    dilate = cv2.dilate(thresh, kernel, iterations=2)
+    dilate = cv2.dilate(thresh, kernel, iterations=args.iteration)
 
     cnts = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
@@ -228,4 +229,4 @@ if __name__ == "__main__":
     print("Cluster labels (excluding noise):", unique_final)
     print("Number of clusters (excluding noise):", len(unique_final))
 
-    visualize_clusters_translucent(original, bboxes, labels)
+    visualize_clusters_translucent(original, bboxes, final_labels)
